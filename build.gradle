@@ -1,0 +1,21 @@
+plugins {
+    id 'java-library'
+}
+
+repositories {
+    jcenter()
+}
+
+defaultTasks("clean", "build")
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_9
+    targetCompatibility = JavaVersion.VERSION_1_9
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'ipp.PrintJob'
+    }
+    archivesBaseName = 'printjob'
+}

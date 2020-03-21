@@ -1,0 +1,1 @@
+java -jar printjob.jar http://localhost:8632/printers/laser A4-blank.pdf
