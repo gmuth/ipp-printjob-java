@@ -18,35 +18,35 @@ import java.nio.charset.Charset;
 
 class PrintJob {
 
-  public static void main(String[] args) {
+  public static void main(final String[] args) {
     if (args.length < 2) {
       System.out.println("usage: java -jar printjob.jar <printer-uri> <file>");
       return;
     }
     try {
-      URI printerURI = URI.create(args[0]);
+      URI printerUri = URI.create(args[0]);
       File file = new File(args[1]);
-      new PrintJob().printDocument(printerURI, new FileInputStream(file));
+      new PrintJob().printDocument(printerUri, new FileInputStream(file));
 
     } catch (Exception exception) {
       exception.printStackTrace(System.err);
     }
   }
 
-  protected static Charset charset = Charset.forName("UTF-8");
-  protected static String ippContentType = "application/ipp";
+  private static Charset charset = Charset.forName("US-ASCII");
+  private static String ippContentType = "application/ipp";
 
-  public void printDocument(URI uri, InputStream documentInputStream) throws IOException {
+  public void printDocument(final URI uri, final InputStream documentInputStream) throws IOException {
     System.out.println(String.format("send ipp request to %s", uri.toString()));
 
-    HttpURLConnection httpURLConnection = (HttpURLConnection) uri.toURL().openConnection();
-    httpURLConnection.setConnectTimeout(3000);
-    httpURLConnection.setDoOutput(true);
-    httpURLConnection.setRequestProperty("Content-Type", ippContentType);
+    HttpURLConnection httpUrlConnection = (HttpURLConnection) uri.toURL().openConnection();
+    httpUrlConnection.setConnectTimeout(3000);
+    httpUrlConnection.setDoOutput(true);
+    httpUrlConnection.setRequestProperty("Content-Type", ippContentType);
 
     // encode ipp request 'Print-Job operation'
-    OutputStream outputStream = httpURLConnection.getOutputStream();
-    DataOutputStream dataOutputStream = new DataOutputStream(httpURLConnection.getOutputStream());
+    OutputStream outputStream = httpUrlConnection.getOutputStream();
+    DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
     dataOutputStream.writeShort(0x0101); // ipp version
     dataOutputStream.writeShort(0x0002); // print job operation
     dataOutputStream.writeInt(0x002A); // request id
@@ -63,16 +63,16 @@ class PrintJob {
     outputStream.close();
 
     // check http response
-    if (httpURLConnection.getResponseCode() != 200) {
-      System.err.println(new String(httpURLConnection.getErrorStream().readAllBytes()));
-      throw new IOException(String.format("post to %s failed with http status %d", uri, httpURLConnection.getResponseCode()));
+    if (httpUrlConnection.getResponseCode() != 200) {
+      System.err.println(new String(httpUrlConnection.getErrorStream().readAllBytes()));
+      throw new IOException(String.format("post to %s failed with http status %d", uri, httpUrlConnection.getResponseCode()));
     }
-    if (!ippContentType.equals(httpURLConnection.getHeaderField("Content-Type"))) {
+    if (!ippContentType.equals(httpUrlConnection.getHeaderField("Content-Type"))) {
       throw new IOException(String.format("response from %s is not '%s'", uri, ippContentType));
     }
 
     // decode ipp response
-    DataInputStream dataInputStream = new DataInputStream(httpURLConnection.getInputStream());
+    DataInputStream dataInputStream = new DataInputStream(httpUrlConnection.getInputStream());
     System.out.println(String.format("ipp version %d.%s", dataInputStream.readByte(), dataInputStream.readByte()));
     System.out.println(String.format("ipp status %04X", dataInputStream.readShort()));
     dataInputStream.readInt(); // ignore request id
@@ -106,6 +106,9 @@ class PrintJob {
           value = String.format("<decoding-tag-%02X-not-implemented>", tag);
       }
       System.out.println(String.format("   %s (%02X) = %s", name, tag, value));
+      if ("attributes-charset".equals(name)) {
+        charset = Charset.forName((String) value);
+      }
     } while (tag != (byte) 0x03);
   }
 
@@ -119,8 +122,11 @@ class PrintJob {
 
   protected byte[] readValue(DataInputStream dataInputStream) throws IOException {
     byte[] valueBytes = new byte[dataInputStream.readShort()];
-    dataInputStream.read(valueBytes);
-    return valueBytes;
+    if (valueBytes.length == dataInputStream.read(valueBytes)) {
+      return valueBytes;
+    } else {
+      throw new IOException("failed to read valueBytes");
+    }
     // Java 11: return dataInputStream.readNBytes(dataInputStream.readShort());
   }
 
