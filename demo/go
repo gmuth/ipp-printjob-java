@@ -1,1 +1,1 @@
-java -jar printjob.jar http://localhost:8632/printers/laser A4-blank.pdf
+java -jar printjob.jar ipp://localhost:8632/printers/laser A4-blank.pdf

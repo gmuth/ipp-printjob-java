@@ -20,12 +20,11 @@ containing the Printer Simulator.
 ### Usage
 
 The tool takes two arguments: *printer-uri* and *file-name*. 
-The url scheme `ipp://` is not supported - use `http://` instead.
 If you don't know the printer uri try `ippfind`. 
 
-    java -jar printjob.jar http://colorjet:631/ipp/printer A4-blank.pdf
+    java -jar printjob.jar ipp://colorjet:631/ipp/printer A4-blank.pdf
     
-    send ipp request to http://colorjet:631/ipp/printer
+    send ipp request to ipp://colorjet:631/ipp/printer
     ipp version 1.1
     ipp response status: 0000
     group 01
@@ -41,7 +40,7 @@ If you don't know the printer uri try `ippfind`.
 The equivalent java code is:
 
     new PrintJob().printDocument(
-        URI.create("http://colorjet:631/ipp/printer"),
+        URI.create("ipp://colorjet:631/ipp/printer"),
         FileInputStream(File("A4-blank.pdf"))
     )
 
@@ -58,13 +57,13 @@ If required by your printer, you can set the document format programmatically by
 
 If you use an unsupported `printer-uri` you will get a response similar to this one:
 
-    send ipp request to http://localhost:8632/ipp/norona
+    send ipp request to ipp://localhost:8632/ipp/norona
     ipp version 1.1
     ipp status 0400
     group 01
        attributes-charset (47) = utf-8
        attributes-natural-language (48) = en
-       status-message (41) = Bad printer-uri "http://localhost:8632/ipp/norona".
+       status-message (41) = Bad printer-uri "ipp://localhost:8632/ipp/norona".
     group 03
 
 You can use `ippfind` or `dns-sd -Z _ipp._tcp` (look at the rp value) to discover your printer's uri.

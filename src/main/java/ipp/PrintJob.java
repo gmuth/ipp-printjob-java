@@ -38,9 +38,10 @@ class PrintJob {
 
   public void printDocument(final URI uri, final InputStream documentInputStream) throws IOException {
     System.out.println(String.format("send ipp request to %s", uri.toString()));
-
-    HttpURLConnection httpUrlConnection = (HttpURLConnection) uri.toURL().openConnection();
-    httpUrlConnection.setConnectTimeout(3000);
+    String httpScheme = uri.getScheme().replace("ipp", "http");
+    URI httpUri = URI.create(String.format("%s:%s", httpScheme, uri.getSchemeSpecificPart()));
+    HttpURLConnection httpUrlConnection = (HttpURLConnection) httpUri.toURL().openConnection();
+    httpUrlConnection.setConnectTimeout(5000);
     httpUrlConnection.setDoOutput(true);
     httpUrlConnection.setRequestProperty("Content-Type", ippContentType);
 
