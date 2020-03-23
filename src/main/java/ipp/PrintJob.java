@@ -33,7 +33,7 @@ class PrintJob {
     }
   }
 
-  private static Charset charset = Charset.forName("US-ASCII");
+  private static Charset US_ASCII = Charset.forName("US-ASCII");
   private static String ippContentType = "application/ipp";
 
   public void printDocument(final URI uri, final InputStream documentInputStream) throws IOException {
@@ -52,7 +52,7 @@ class PrintJob {
     dataOutputStream.writeShort(0x0002); // print job operation
     dataOutputStream.writeInt(0x002A); // request id
     dataOutputStream.writeByte(0x01); // operation group tag
-    writeAttribute(dataOutputStream, 0x47, "attributes-charset", charset.name().toLowerCase());
+    writeAttribute(dataOutputStream, 0x47, "attributes-charset", "us-ascii");
     writeAttribute(dataOutputStream, 0x48, "attributes-natural-language", "en");
     writeAttribute(dataOutputStream, 0x45, "printer-uri", uri.toString());
     dataOutputStream.writeByte(0x03); // end tag
@@ -85,7 +85,7 @@ class PrintJob {
         continue;
       }
       // attribute tag
-      String name = new String(readValue(dataInputStream), charset);
+      String name = new String(readValue(dataInputStream), US_ASCII);
       Object value;
       switch (tag) {
         case 0x21:
@@ -99,7 +99,7 @@ class PrintJob {
         case 0x45:
         case 0x47:
         case 0x48:
-          value = new String(readValue(dataInputStream), charset);
+          value = new String(readValue(dataInputStream), US_ASCII);
           break;
 
         default:
@@ -107,18 +107,15 @@ class PrintJob {
           value = String.format("<decoding-tag-%02X-not-implemented>", tag);
       }
       System.out.println(String.format("   %s (%02X) = %s", name, tag, value));
-      if ("attributes-charset".equals(name)) {
-        charset = Charset.forName((String) value);
-      }
     } while (tag != (byte) 0x03);
   }
 
   protected void writeAttribute(DataOutputStream dataOutputStream, Integer tag, String name, String value) throws IOException {
     dataOutputStream.writeByte(tag);
     dataOutputStream.writeShort(name.length());
-    dataOutputStream.write(name.getBytes(charset));
+    dataOutputStream.write(name.getBytes(US_ASCII));
     dataOutputStream.writeShort(value.length());
-    dataOutputStream.write(value.getBytes(charset));
+    dataOutputStream.write(value.getBytes(US_ASCII));
   }
 
   protected byte[] readValue(DataInputStream dataInputStream) throws IOException {
