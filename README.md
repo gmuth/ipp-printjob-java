@@ -1,5 +1,8 @@
+
 # ipp-printjob-java
 A minimal ipp protocol implementation to submit a document to a printer.
+
+![Java CI with Gradle](https://github.com/gmuth/ipp-printjob-java/workflows/Java%20CI%20with%20Gradle/badge.svg)
 
 ### General
 
