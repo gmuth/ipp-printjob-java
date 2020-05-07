@@ -9,7 +9,7 @@ A minimal ipp protocol implementation (100 lines) to submit a document to a prin
 The printjob source code should be useful for use cases of driverless printing.
 Especially automated processes without user interaction should benefit from simple solutions like this.
 This code is not and will never become a full-fledged ipp implementation.
-I will provide more control over print jobs, monitoring of printers and print jobs in my other project
+I provide more control over print jobs, monitoring of printers and print jobs in my other project
 [ipp-client-kotlin](https://github.com/gmuth/ipp-client-kotlin).
 
 ### Distribution
