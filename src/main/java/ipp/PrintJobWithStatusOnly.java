@@ -12,13 +12,13 @@ import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-public class PrintJobStackOverflow {
+public class PrintJobWithStatusOnly {
 
   public static void main(String[] args) throws Exception {
-    URI printerURI = URI.create("http://colorjet:631/ipp/printer");
-    File file = new File("demo/A4-blank.pdf");
-    short status = new PrintJobStackOverflow()
-        .printDocument(printerURI, new FileInputStream(file));
+    URI printerUri = URI.create(args[0]);
+    File file = new File(args[1]);
+    short status = new PrintJobWithStatusOnly()
+        .printDocument(printerUri, new FileInputStream(file));
     System.out.println(String.format("ipp status: %04X", status));
   }
 
@@ -29,9 +29,7 @@ public class PrintJobStackOverflow {
         (HttpURLConnection) uri.toURL().openConnection();
     httpURLConnection.setDoOutput(true);
     httpURLConnection.setRequestProperty("Content-Type", "application/ipp");
-    OutputStream outputStream = httpURLConnection.getOutputStream();
-    DataOutputStream dataOutputStream =
-        new DataOutputStream(httpURLConnection.getOutputStream());
+    DataOutputStream dataOutputStream = new DataOutputStream(httpURLConnection.getOutputStream());
     dataOutputStream.writeShort(0x0101); // ipp version
     dataOutputStream.writeShort(0x0002); // print job operation
     dataOutputStream.writeInt(0x002A); // request id
@@ -40,20 +38,14 @@ public class PrintJobStackOverflow {
     writeAttribute(dataOutputStream, 0x48, "attributes-natural-language", "en");
     writeAttribute(dataOutputStream, 0x45, "printer-uri", uri.toString());
     dataOutputStream.writeByte(0x03); // end tag
-    documentInputStream.transferTo(outputStream);
+    documentInputStream.transferTo(dataOutputStream);
     dataOutputStream.close();
-    outputStream.close();
     if (httpURLConnection.getResponseCode() == 200) {
-      DataInputStream dataInputStream =
-          new DataInputStream(httpURLConnection.getInputStream());
-      System.out.println(String.format("ipp version %d.%s",
-          dataInputStream.readByte(), dataInputStream.readByte()
-      ));
+      DataInputStream dataInputStream = new DataInputStream(httpURLConnection.getInputStream());
+      System.out.println(String.format("ipp version %d.%s", dataInputStream.readByte(), dataInputStream.readByte()));
       return dataInputStream.readShort();
     } else {
-      throw new IOException(String.format("post to %s failed with http status %d",
-          uri, httpURLConnection.getResponseCode()
-      ));
+      throw new IOException(String.format("post to %s failed with http status %d", uri, httpURLConnection.getResponseCode()));
     }
   }
 

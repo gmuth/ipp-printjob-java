@@ -46,8 +46,7 @@ class PrintJob {
     httpUrlConnection.setRequestProperty("Content-Type", ippContentType);
 
     // encode ipp request 'Print-Job operation'
-    OutputStream outputStream = httpUrlConnection.getOutputStream();
-    DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
+    DataOutputStream dataOutputStream = new DataOutputStream(httpUrlConnection.getOutputStream());
     dataOutputStream.writeShort(0x0101); // ipp version
     dataOutputStream.writeShort(0x0002); // print job operation
     dataOutputStream.writeInt(0x002A); // request id
@@ -57,11 +56,10 @@ class PrintJob {
     writeAttribute(dataOutputStream, 0x45, "printer-uri", uri.toString());
     dataOutputStream.writeByte(0x03); // end tag
     // append document
-    documentInputStream.transferTo(outputStream); // Java >= 9
-    // Java <9: byte[] buffer = new byte[4096];
-    // Java <9: for (int length; (length = documentInputStream.read(buffer)) != -1; outputStream.write(buffer, 0, length));
+    // byte[] buffer = new byte[4096]; // Java <9
+    // for (int length; (length = documentInputStream.read(buffer)) != -1; outputStream.write(buffer, 0, length));
+    documentInputStream.transferTo(dataOutputStream); // Java >= 9
     dataOutputStream.close();
-    outputStream.close();
 
     // check http response
     if (httpUrlConnection.getResponseCode() != 200) {
