@@ -1,12 +1,16 @@
 package ipp;
 
+// --------------------
+// Author: Gerhard Muth
+// Date  : 7.5.2020
+// --------------------
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.nio.charset.Charset;
