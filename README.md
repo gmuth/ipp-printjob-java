@@ -17,7 +17,7 @@ I provide more control over print jobs, monitoring of printers and print jobs in
 For the impatient [binary releases](https://github.com/gmuth/ipp-printjob-java/releases) are provided. 
 Directory `demo` also contains the `printjob.jar` and a test script called `go` that submits a blank PDF to Apple's Printer Simulator.
 To avoid real printing, registered Apple developers can download
-[Additional Tools for Xcode](https://download.developer.apple.com/Developer_Tools/Additional_Tools_for_Xcode_11/Additional_Tools_for_Xcode_11.dmg)
+[Additional Tools for Xcode](https://developer.apple.com/download/more/)
 containing the Printer Simulator.
 
 ### Usage
