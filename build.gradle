@@ -1,5 +1,6 @@
 plugins {
-    id 'java-library'
+    id "java-library"
+    id "org.sonarqube" version "3.0"
 }
 
 repositories {
@@ -15,7 +16,7 @@ java {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'ipp.PrintJob'
+        attributes 'Main-Class': 'ipp.IppPrinter'
     }
     archivesBaseName = 'printjob'
 }

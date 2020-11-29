@@ -25,28 +25,28 @@ containing the Printer Simulator.
 The tool takes two arguments: *printer-uri* and *file-name*. 
 If you don't know the printer uri try `ippfind`. 
 
-    java -jar printjob.jar ipp://colorjet:631/ipp/printer A4-blank.pdf
-    
-    send ipp request to ipp://colorjet:631/ipp/printer
-    ipp version 1.1
-    ipp response status: 0000
-    group 01
-       attributes-charset (47) = utf-8
-       attributes-natural-language (48) = en
-    group 02
-       job-uri (45) = ipp://colorjet:631/jobs/352
-       job-id (21) = 352
-       job-state (23) = 3
-       job-state-reasons (44) = none
-    group 03
+```
+java -jar printjob.jar ipp://colorjet:631/ipp/printer A4-blank.pdf
+
+send A4-blank.pdf to ipp://colorjet:631/ipp/printer
+version 1.1
+status 0x0000
+group 01
+ attributes-charset (47) = us-ascii
+ attributes-natural-language (48) = en
+group 02
+ job-uri (45) = ipp://colorjet:631/jobs/352
+ job-id (21) = 352
+ job-state (23) = 3
+ job-state-reasons (44) = none
+group 03
+``` 
     
 The equivalent java code is:
 
-    new PrintJob().printDocument(
-        URI.create("ipp://colorjet:631/ipp/printer"),
-        FileInputStream(File("A4-blank.pdf"))
-    )
-
+```java
+new IppPrinter(new URI("ipp://colorjet:631/ipp/printer")).printJob(File("A4-blank.pdf"));
+```
 ### Document Format
 
 The operation attributes group does not include a value for `document-format` by default.
@@ -54,21 +54,23 @@ This should be equivalent to `application/octet-stream` indicating the printer h
 You have to make sure the printer supports the document format you send - PDF is usually a good option.
 If required by your printer, you can set the document format programmatically by adding it e.g. after the `printer-uri` attribute.
 
-    writeAttribute(dataOutputStream, 0x49, "document-format", "application/pdf");
+    writeAttribute(0x49, "document-format", "application/pdf");
     
 ### Issues
 
-If you use an unsupported `printer-uri` you will get a response similar to this one:
+If you use an unsupported `printer-uri` you might get a response similar to this one:
 
-    send ipp request to ipp://localhost:8632/ipp/norona
-    ipp version 1.1
-    ipp status 0400
-    group 01
-       attributes-charset (47) = utf-8
-       attributes-natural-language (48) = en
-       status-message (41) = Bad printer-uri "ipp://localhost:8632/ipp/norona".
-    group 03
-
+```
+send A4-blank.pdf to ipp://localhost:8632/ipp/norona
+version 1.1
+status 0x0400
+requestId 1
+group 01
+ attributes-charset (0x47) = utf-8
+ attributes-natural-language (0x48) = en-us
+ status-message (0x41) = Bad printer-uri "ipp://localhost:8632/ipp/norona".
+group 03
+```
 You can use `ippfind` or `dns-sd -Z _ipp._tcp` (look at the rp value) to discover your printer's uri.
 If you have other issues contact me.
 
