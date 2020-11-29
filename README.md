@@ -12,10 +12,9 @@ This code is not and will never become a full-fledged ipp implementation.
 I provide more control over print jobs, monitoring of printers and print jobs in my other project
 [ipp-client-kotlin](https://github.com/gmuth/ipp-client-kotlin).
 
-### Distribution
+### Demonstration
 
-For the impatient [binary releases](https://github.com/gmuth/ipp-printjob-java/releases) are provided. 
-Directory `demo` also contains the `printjob.jar` and a test script called `go` that submits a blank PDF to Apple's Printer Simulator.
+Directory `demo` contains the `printjob.jar` and a test script called `go` that submits a blank PDF to Apple's Printer Simulator.
 To avoid real printing, registered Apple developers can download
 [Additional Tools for Xcode](https://developer.apple.com/download/more/)
 containing the Printer Simulator.
