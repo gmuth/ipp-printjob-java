@@ -50,6 +50,7 @@ class IppPrinter {
     // rfc 8010 syntax of encoding: https://tools.ietf.org/html/rfc8010#page-15
     dataOutputStream = new DataOutputStream(httpUrlConnection.getOutputStream());
     dataOutputStream.writeShort(0x0101); // ipp version 1.1
+    // operation -> https://tools.ietf.org/html/rfc8011#section-5.4.15
     dataOutputStream.writeShort(0x0002); // operation Print-Job
     dataOutputStream.writeInt(0x0001); // request id
     dataOutputStream.writeByte(0x01); // operation group tag
