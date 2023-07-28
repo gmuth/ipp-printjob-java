@@ -39,7 +39,7 @@ class IppPrinter {
 
   // https://tools.ietf.org/html/rfc8011#section-4.2.1
   public void printJob(final File file) throws IOException {
-    System.out.println(String.format("send %s to %s", file.getName(), uri));
+    System.out.printf("send %s to %s%n", file.getName(), uri);
     String httpScheme = uri.getScheme().replace("ipp", "http");
     URI httpUri = URI.create(String.format("%s:%s", httpScheme, uri.getSchemeSpecificPart()));
     HttpURLConnection httpUrlConnection = (HttpURLConnection) httpUri.toURL().openConnection();
@@ -70,21 +70,21 @@ class IppPrinter {
       throw new IOException(String.format("post to %s failed with http status %d", uri, httpUrlConnection.getResponseCode()));
     }
     if (!"application/ipp".equals(httpUrlConnection.getHeaderField("Content-Type"))) {
-      throw new IOException(String.format("response type is not ipp"));
+      throw new IOException("response type is not ipp");
     }
 
     // decode ipp response
     dataInputStream = new DataInputStream(httpUrlConnection.getInputStream());
-    System.out.println(String.format("version %d.%d", dataInputStream.readByte(), dataInputStream.readByte()));
+    System.out.printf("version %d.%d%n", dataInputStream.readByte(), dataInputStream.readByte());
     // status -> https://www.iana.org/assignments/ipp-registrations/ipp-registrations.xhtml#ipp-registrations-11
-    System.out.println(String.format("status 0x%04X", dataInputStream.readShort())); //
-    System.out.println(String.format("requestId %d", dataInputStream.readInt()));
+    System.out.printf("status 0x%04X%n", dataInputStream.readShort());
+    System.out.printf("requestId %d%n", dataInputStream.readInt());
     byte tag;
     do {
       tag = dataInputStream.readByte();
       // delimiter tag -> https://tools.ietf.org/html/rfc8010#section-3.5.1
       if (tag < 0x10) {
-        System.out.println(String.format("group %02X", tag));
+        System.out.printf("group %02X%n", tag);
         continue;
       }
       String name = readStringValue();
@@ -107,8 +107,8 @@ class IppPrinter {
           readStringValue();
           value = "<decoding-not-implemented>";
       }
-      System.out.println(String.format(" %s (0x%02X) = %s", name, tag, value));
-    } while (tag != (byte) 0x03);
+      System.out.printf(" %s (0x%02X) = %s%n", name, tag, value);
+    } while (tag != (byte) 0x03); // end tag
     // job-state -> https://tools.ietf.org/html/rfc8011#section-5.3.7
   }
 
@@ -123,7 +123,7 @@ class IppPrinter {
   private String readStringValue() throws IOException {
     byte[] valueBytes = new byte[dataInputStream.readShort()];
     dataInputStream.read(valueBytes);
-    return new String(valueBytes);
+    return new String(valueBytes, "us-ascii");
     // Java 11: return dataInputStream.readNBytes(dataInputStream.readShort());
   }
 }
