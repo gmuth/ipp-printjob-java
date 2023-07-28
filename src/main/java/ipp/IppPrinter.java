@@ -2,11 +2,7 @@ package ipp;
 
 // Author: Gerhard Muth
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
 
@@ -14,16 +10,12 @@ class IppPrinter {
 
   public static void main(final String[] args) {
     try {
-      URI uri = new URI("ipp://localhost:8632/printers/laser");
+      // printer uri for PrinterSimulator v87 (Apple)
+      URI uri = new URI("ipp://localhost:8632/ipp/print/laser");
       File file = new File("demo/A4-blank.pdf");
-      if (args.length > 0) {
-        uri = new URI(args[0]);
-      }
-      if (args.length > 1) {
-        file = new File(args[1]);
-      }
+      if (args.length > 0) uri = new URI(args[0]);
+      if (args.length > 1) file = new File(args[1]);
       new IppPrinter(uri).printJob(file);
-
     } catch (Exception exception) {
       exception.printStackTrace(System.err);
     }
@@ -41,7 +33,7 @@ class IppPrinter {
   public void printJob(final File file) throws IOException {
     System.out.printf("send %s to %s%n", file.getName(), uri);
     String httpScheme = uri.getScheme().replace("ipp", "http");
-    URI httpUri = URI.create(String.format("%s:%s", httpScheme, uri.getSchemeSpecificPart()));
+    URI httpUri = URI.create(String.format("%s:%s", httpScheme, uri.getRawSchemeSpecificPart()));
     HttpURLConnection httpUrlConnection = (HttpURLConnection) httpUri.toURL().openConnection();
     httpUrlConnection.setConnectTimeout(5000);
     httpUrlConnection.setDoOutput(true);
@@ -58,11 +50,10 @@ class IppPrinter {
     writeAttribute(0x48, "attributes-natural-language", "en"); // natural-language tag
     writeAttribute(0x45, "printer-uri", uri.toString()); // uri tag
     dataOutputStream.writeByte(0x03); // end tag
-
-    // append document
-    // byte[] buffer = new byte[4096]; // Java <9
-    // for (int length; (length = documentInputStream.read(buffer)) != -1; outputStream.write(buffer, 0, length));
-    new FileInputStream(file).transferTo(dataOutputStream); // Java >= 9
+    new FileInputStream(file) {{
+      transferTo(dataOutputStream);
+      close();
+    }};
 
     // check http response
     if (httpUrlConnection.getResponseCode() != 200) {
@@ -110,6 +101,8 @@ class IppPrinter {
       System.out.printf(" %s (0x%02X) = %s%n", name, tag, value);
     } while (tag != (byte) 0x03); // end tag
     // job-state -> https://tools.ietf.org/html/rfc8011#section-5.3.7
+    dataOutputStream.close();
+    dataInputStream.close();
   }
 
   private void writeAttribute(final Integer tag, final String name, final String value) throws IOException {
@@ -121,9 +114,7 @@ class IppPrinter {
   }
 
   private String readStringValue() throws IOException {
-    byte[] valueBytes = new byte[dataInputStream.readShort()];
-    dataInputStream.read(valueBytes);
+    byte[] valueBytes = dataInputStream.readNBytes(dataInputStream.readShort());
     return new String(valueBytes, "us-ascii");
-    // Java 11: return dataInputStream.readNBytes(dataInputStream.readShort());
   }
 }
