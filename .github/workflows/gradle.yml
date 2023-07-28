@@ -18,11 +18,15 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
+          
       # https://github.com/gradle/wrapper-validation-action
       - uses: gradle/wrapper-validation-action@v1
+      
+      # https://github.com/gradle/gradle-build-action
       - uses: gradle/gradle-build-action@v2
-#        with:
-#          arguments: build
+        with:
+          arguments: build
+          
 #      - name: Grant execute permission for gradlew
 #        run: chmod +x gradlew
 #      - name: Build with Gradle
