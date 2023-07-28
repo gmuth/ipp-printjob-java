@@ -70,7 +70,7 @@ class IppPrinter {
       throw new IOException(String.format("post to %s failed with http status %d", uri, httpUrlConnection.getResponseCode()));
     }
     if (!"application/ipp".equals(httpUrlConnection.getHeaderField("Content-Type"))) {
-      throw new IOException(String.format("response is not ipp"));
+      throw new IOException(String.format("response type is not ipp"));
     }
 
     // decode ipp response
