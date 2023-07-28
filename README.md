@@ -16,7 +16,7 @@ I provide more control over print jobs, monitoring of printers and print jobs in
 
 Directory `demo` contains the `printjob.jar` and a test script called `go` that submits a blank PDF to Apple's Printer Simulator.
 To avoid real printing, registered Apple developers can download
-[Additional Tools for Xcode](https://developer.apple.com/download/more/)
+[Additional Tools for Xcode](https://developer.apple.com/download/all/?q=hardware)
 containing the Printer Simulator.
 
 ### Usage
