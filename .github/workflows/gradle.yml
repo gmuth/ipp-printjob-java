@@ -1,5 +1,5 @@
 # This workflow will build a Java project with Gradle
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+# https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
 
 name: Java CI with Gradle
 
@@ -11,16 +11,19 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup Java 11
-      uses: actions/setup-java@v3
-      with:
-        java-version: 11
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Build with Gradle
-      run: ./gradlew build
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      # https://github.com/gradle/wrapper-validation-action
+      - uses: gradle/wrapper-validation-action@v1
+      - uses: gradle/gradle-build-action
+#        with:
+#          arguments: build
+#      - name: Grant execute permission for gradlew
+#        run: chmod +x gradlew
+#      - name: Build with Gradle
+#        run: ./gradlew build
