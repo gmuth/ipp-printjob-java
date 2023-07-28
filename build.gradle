@@ -1,17 +1,24 @@
+// How to build?
+// $ ./gradlew
+//
+// How to run?
+// $ java -jar build/libs/printjob.jar ipp://localhost:8632/printers/laser
+
+// update gradle version: ./gradlew wrapper --gradle-version 7.6.2
+
 plugins {
     id "java-library"
-    id "org.sonarqube" version "3.0"
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
-defaultTasks("clean", "build")
+defaultTasks("clean", "assemble")
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_9
-    targetCompatibility = JavaVersion.VERSION_1_9
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 jar {
